@@ -196,18 +196,18 @@ variable "st_access_prd" {
 }
 
 #### Experimental ####
-variable "dscAgentPackageLocation" {}
-variable "storageAccountName" {}
-variable "storageObjectsRgName" {}
-variable "storagePurpose" {}
-variable "identityDomainName" {}
-variable "identityServiceProvider" {}
-variable "varAzureCloudName" {}
-variable "workloadSubsId" {}
-variable "varAdminUserName" {}
-variable "storageCustomOuPath" {}
-variable "ouStgPath" {}
-variable "fileShareName" {}
-variable "managedIdentityClientId" {}
-variable "varSecurityPrincipalName" {}
-variable "storageAccountFqdn" {}
+# variable "dscAgentPackageLocation" {}
+# variable "storageAccountName" {}
+# variable "storageObjectsRgName" {}
+# variable "storagePurpose" {}
+# variable "identityDomainName" {}
+# variable "identityServiceProvider" {}
+# variable "varAzureCloudName" {}
+# variable "workloadSubsId" {}
+# variable "varAdminUserName" {}
+# variable "storageCustomOuPath" {}
+# variable "ouStgPath" {}
+# variable "fileShareName" {}
+# variable "managedIdentityClientId" {}
+# variable "varSecurityPrincipalName" {}
+# variable "storageAccountFqdn" {}
