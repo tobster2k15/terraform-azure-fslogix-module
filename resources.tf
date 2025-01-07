@@ -11,7 +11,7 @@ resource "azurerm_windows_virtual_machine" "temp_vm_for_st_join" {
   network_interface_ids = azurerm_network_interface.temp_nic.*.id
   admin_username        = var.local_admin
   admin_password        = var.local_pass
-  vm_size               = "Standard_D4as_v4"
+  size                  = "Standard_D4as_v4"
   tags = merge(var.tags, {
     Automation = "Temp Deploy for Storage Account Domain Join"
   })
@@ -71,7 +71,7 @@ PROTECTED_SETTINGS
 
 # resource "azurerm_virtual_machine_extension" "st_join" {
 #   name                 = "storage_account_domain_join"
-#   virtual_machine_id   = azurerm_windows_virtual_machine.temp_vm_for_st_join.*.id
+#   virtual_machine_id   = azurerm_windows_virtual_machine.temp_vm_for_st_join.id
 #   publisher            = "Microsoft.Compute"
 #   type                 = "CustomScriptExtension"
 #   type_handler_version = "1.9"
@@ -97,7 +97,7 @@ resource "null_resource" "install_az_cli" {
   #### Delete Temp VM via Azure CLI ###
   provisioner "local-exec" {
     command = <<EOF
-    ./env/usr/bin/az resource invoke-action az vm delete \ --resource-group "${var.azurerm_resource_group.myrg_shd} \ --name "${var.tetemp_vm_for_st_join}" --force-deletion none
+    ./env/usr/bin/az resource invoke-action az vm delete \ --resource-group "${var.azurerm_resource_group.myrg_shd} \ --name "${var.azurerm_windows_virtual_machine.temp_vm_for_st_join.name}" --force-deletion none
     EOF
   }
   depends_on = [
