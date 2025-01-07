@@ -184,7 +184,7 @@ resource "azurerm_storage_account" "storage" {
 resource "azurerm_storage_share" "FSShare" {
   name             = "fslogix"
   quota            = var.share_size
-  enabled_protocol = var.share_protocol
+  # enabled_protocol = var.share_protocol
   storage_account_name = azurerm_storage_account.storage.name
   depends_on           = [azurerm_storage_account.storage]
 }
