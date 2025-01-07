@@ -189,7 +189,7 @@ variable "vnet_id" {
   default     = ""
 }
 
-variable "st_access_prd" {
+variable "st_access" {
   type        = list(string)
   description = "Assign role to storage account for production."
   default     = null

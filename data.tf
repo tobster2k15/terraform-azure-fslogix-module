@@ -24,3 +24,11 @@
 data "azurerm_role_definition" "storage_role" {
   name = "Storage File Data SMB Share Contributor"
 }
+
+data "azurerm_client_config" "current" {}
+
+data "azuread_group" "avd_group_prd" {
+  for_each         = toset(var.st_access)
+  display_name     = each.value
+  security_enabled = true
+}
