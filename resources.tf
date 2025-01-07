@@ -11,7 +11,7 @@ resource "azurerm_windows_virtual_machine" "temp_vm_for_st_join" {
   network_interface_ids = azurerm_network_interface.temp_nic.*.id
   admin_username        = var.local_admin
   admin_password        = var.local_pass
-  size                  = "Standard_D4as_v4"
+  size                  = "Standard_D4s_v4"
   tags = merge(var.tags, {
     Automation = "Temp Deploy for Storage Account Domain Join"
   })
