@@ -199,8 +199,8 @@ resource "azurerm_storage_share" "additional_shares" {
 }
 
 resource "azurerm_role_assignment" "af_role_prd" {
-  count              = var.st_access_prd != null ? var.st_access_prd : 0
-  scope              = azurerm_storage_account.storage[count.index].id
+ for_each            = toset(var.st_access_prd)
+  scope              = azurerm_storage_account.storage.id
   role_definition_id = data.azurerm_role_definition.storage_role.id
-  principal_id       = var.st_access_prd
+  principal_id       = each.value
 }
