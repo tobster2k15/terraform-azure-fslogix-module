@@ -195,6 +195,12 @@ variable "st_access_prd" {
   default     = null
 }
 
+variable "os_disk_type" {
+  type        = string
+  description = "The type of the OS disk."
+  default     = "Standard_LRS"
+}
+
 #### Experimental ####
 # variable "dscAgentPackageLocation" {}
 # variable "storageAccountName" {}

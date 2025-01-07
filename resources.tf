@@ -16,7 +16,7 @@ resource "azurerm_windows_virtual_machine" "temp_vm_for_st_join" {
     Automation = "Temp Deploy for Storage Account Domain Join"
   })
   os_disk {
-    name                 = ""
+    name                 = "osdisk"
     caching              = "ReadWrite"
     storage_account_type = var.os_disk_type
   }
