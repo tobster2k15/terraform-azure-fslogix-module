@@ -68,9 +68,9 @@ variable "usecase" {
 }
 
 variable "share_size" {
-  type        = string
+  type        = number
   description = "The size of the share."
-  default     = "100"
+  default     = 100
 }
 
 variable "ARM_CLIENT_ID" {

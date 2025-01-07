@@ -135,7 +135,7 @@ resource "azurerm_private_endpoint" "endpoint_st" {
   }
   private_dns_zone_group {
     name                 = "dns-file-${var.business_unit}"
-    private_dns_zone_ids = azurerm_private_dns_zone.dnszone_st.*.id
+    private_dns_zone_ids = azurerm_private_dns_zone.dnszone_st.id
   }
 }
 
