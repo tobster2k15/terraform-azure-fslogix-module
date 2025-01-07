@@ -45,7 +45,7 @@ resource "azurerm_network_interface" "temp_nic" {
 
 resource "azurerm_virtual_machine_extension" "domain_join_st" {
   name                       = "join-domain"
-  virtual_machine_id         = azurerm_windows_virtual_machine.temp_vm_for_st_join.*.id
+  virtual_machine_id         = azurerm_windows_virtual_machine.temp_vm_for_st_join.id
   publisher                  = "Microsoft.Compute"
   type                       = "JsonADDomainExtension"
   type_handler_version       = "1.3"
