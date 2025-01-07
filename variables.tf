@@ -207,6 +207,27 @@ variable "ou_path" {
   default     = ""
 }
 
+variable "ARM_CLIENT_ID" {
+  type        = string
+  description = "Client ID"
+  sensitive   = true
+  default     = null
+}
+
+variable "ARM_TENANT_ID" {
+  type        = string
+  description = "Tenant ID"
+  sensitive   = true
+  default     = null
+}
+
+variable "ARM_CLIENT_SECRET" {
+  type        = string
+  description = "Client Secret"
+  sensitive   = true
+  default     = null
+}
+
 #### Experimental ####
 # variable "dscAgentPackageLocation" {}
 # variable "storageAccountName" {}
