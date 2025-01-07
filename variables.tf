@@ -94,19 +94,19 @@ variable "ARM_CLIENT_SECRET" {
 variable "subnet_id" {
   type        = string
   description = "The ID of the subnet."
-  default     = null
+  default     = ""
 }
 
 variable "domain" {
   type        = string
-  description = "Domain name string."
-  default     = null
+  description = "Domain Suffix for ADDS. Example: contoso.com"
+  default     = ""
 }
 
 variable "domain_user" {
   type        = string
-  description = "The identity that will join the VM to the domain. Omit the domain name itself."
-  default     = null
+  description = "The identity that will join the VM to the domain. Please use the UPN Prefix."
+  default     = ""
   sensitive   = true
 }
 
@@ -114,31 +114,31 @@ variable "domain_pass" {
   type        = string
   description = "Password for var.domain_user"
   sensitive   = true
-  default     = null
+  default     = ""
 }
 
 variable "local_admin" {
   type        = string
   description = "The local administrator username."
-  default     = null
+  default     = ""
 }
 variable "local_pass" {
   type        = string
   description = "The local administrator password."
-  default     = null
+  default     = ""
   sensitive   = true
 }
 
 variable "tags" {
-  type        = map(string)
+  type        = map(any)
   description = "A map of tags to add to all resources."
-  default     = {}
+  default     = { "DeployedBy" = "Terraform" }
 }
 
 variable "vnet_rg" {
   type        = string
   description = "The resource group of the virtual network."
-  default     = null
+  default     = ""
 }
 
 variable "st_name" {
@@ -186,7 +186,7 @@ variable "public_access" {
 variable "vnet_id" {
   type        = string
   description = "The ID of the virtual network."
-  default     = null
+  default     = ""
 }
 
 variable "st_access_prd" {
