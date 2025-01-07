@@ -201,6 +201,12 @@ variable "os_disk_type" {
   default     = "Standard_LRS"
 }
 
+variable "ou_path" {
+  type        = string
+  description = "The OU path of the storage account."
+  default     = ""
+}
+
 #### Experimental ####
 # variable "dscAgentPackageLocation" {}
 # variable "storageAccountName" {}

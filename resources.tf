@@ -53,7 +53,7 @@ resource "azurerm_virtual_machine_extension" "domain_join_st" {
   settings                   = <<SETTINGS
     {
       "Name": "${var.domain}",
-      "OUPath": "${var.ou}",
+      "OUPath": "${var.ou_path}",
       "User": "${var.domain_user}@${var.domain}",
       "Restart": "true",
       "Options": "3"
