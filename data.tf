@@ -27,7 +27,7 @@ data "azurerm_role_definition" "storage_role" {
 
 data "azurerm_client_config" "current" {}
 
-data "azuread_group" "avd_group_prd" {
+data "azuread_group" "fslogix_group_prd" {
   for_each         = toset(var.st_access)
   display_name     = each.value
   security_enabled = true

@@ -199,8 +199,8 @@ resource "azurerm_storage_share" "additional_shares" {
 }
 
 resource "azurerm_role_assignment" "af_role_prd" {
- for_each            = toset(var.st_access_prd)
+ for_each            = toset(var.st_access)
   scope              = azurerm_storage_account.storage.id
   role_definition_id = data.azurerm_role_definition.storage_role.id
-  principal_id       = each.value
+  principal_id       = data.azuread_group.fslogix_group_prd[each.value].id
 }
