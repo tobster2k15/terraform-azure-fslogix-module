@@ -153,7 +153,7 @@ resource "azurerm_storage_account_network_rules" "stfw" {
   default_action     = var.public_access == false ? "Deny" : "Allow"
   bypass             = ["AzureServices"]
   depends_on = [
-    azurerm_private_endpoint.endpoint_st
+    azurerm_private_endpoint.endpoint_st, null_resource.install_az_cli
   ]
 }
 
