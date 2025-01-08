@@ -97,7 +97,7 @@ resource "null_resource" "install_az_cli" {
   #### Delete Temp VM via Azure CLI ###
   provisioner "local-exec" {
     command = <<EOF
-    ./env/usr/bin/az vm delete \ -g "${azurerm_resource_group.myrg_shd.name}" \ -n "${azurerm_windows_virtual_machine.temp_vm_for_st_join.name}" \ --yes
+    ./env/usr/bin/az vm delete --resourcegroup "${azurerm_resource_group.myrg_shd.name}" --name "${azurerm_windows_virtual_machine.temp_vm_for_st_join.name}" --yes
     EOF
   }
   depends_on = [
@@ -185,7 +185,7 @@ resource "azurerm_storage_share" "FSShare" {
   name             = "fslogix"
   quota            = var.share_size
   # enabled_protocol = var.share_protocol
-  storage_account_name = azurerm_storage_account.storage.name
+  storage_account_id = azurerm_storage_account.storage.id
 }
 
 resource "azurerm_storage_share" "additional_shares" {
