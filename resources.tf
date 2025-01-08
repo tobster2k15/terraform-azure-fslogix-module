@@ -92,7 +92,7 @@ resource "null_resource" "install_az_cli" {
       mkdir ./env && dpkg -x *.deb ./env
       ./env/usr/bin/az login --service-principal -u "${var.ARM_CLIENT_ID}" -p "${var.ARM_CLIENT_SECRET}" -t "${var.ARM_TENANT_ID}"
       ./env/usr/bin/az account show
-      ./env/usr/bin/az account set --subscription "${data.azurerm_subscription.current.id}" 
+      ./env/usr/bin/az account set --subscription "${data.azurerm_subscription.current.subscription_id}" 
     EOF
   }
   #### Delete Temp VM via Azure CLI ###
