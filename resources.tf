@@ -100,6 +100,11 @@ resource "null_resource" "install_az_cli" {
     ./env/usr/bin/ az vm delete --resource-group "${azurerm_resource_group.myrg_shd.name}" --name "${azurerm_windows_virtual_machine.temp_vm_for_st_join.name}" --yes --force-deletion
     EOF
   }
+  provisioner "local-exec" {
+    command = <<EOF
+    ./env/usr/bin/ az storage share create --account-name "${azurerm_storage_account.storage.name}" --name fslogix
+    EOF
+  }
   depends_on = [
     azurerm_virtual_machine_extension.domain_join_st,
   ]
@@ -181,12 +186,12 @@ resource "azurerm_storage_account" "storage" {
 #   }
 }
 
-resource "azurerm_storage_share" "FSShare" {
-  name             = "fslogix"
-  quota            = var.share_size
-  # enabled_protocol = var.share_protocol
-  storage_account_name = azurerm_storage_account.storage.name
-}
+# resource "azurerm_storage_share" "FSShare" {
+#   name             = "fslogix"
+#   quota            = var.share_size
+#   # enabled_protocol = var.share_protocol
+#   storage_account_name = azurerm_storage_account.storage.name
+# }
 
 resource "azurerm_storage_share" "additional_shares" {
   count                = var.additional_shares != null ? var.additional_shares : 0
