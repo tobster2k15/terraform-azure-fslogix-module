@@ -149,7 +149,7 @@ resource "azurerm_storage_account_network_rules" "stfw" {
   storage_account_id = azurerm_storage_account.storage.id
   default_action     = var.public_access == false ? "Deny" : "Allow"
   bypass             = ["AzureServices"]
-  depends_on = [azurerm_storage_share.FSShare,
+  depends_on = [
     azurerm_private_endpoint.endpoint_st
   ]
 }
