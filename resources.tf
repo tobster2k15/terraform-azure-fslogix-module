@@ -92,9 +92,9 @@ resource "null_resource" "install_az_cli" {
       mkdir ./env && dpkg -x *.deb ./env
       ./env/usr/bin/az login --service-principal -u "${var.ARM_CLIENT_ID}" -p "${var.ARM_CLIENT_SECRET}" -t "${var.ARM_TENANT_ID}"
       ./env/usr/bin/az account show
-      ./env/usr/bin/az account set --subscription "${data.azurerm_subscription.current.subscription_id}" 
-      ./env/usr/bin/ az vm delete --resource-group "${azurerm_resource_group.myrg_shd.name}" --name "${azurerm_windows_virtual_machine.temp_vm_for_st_join.name}" --force-deletion none --yes
-      ./env/usr/bin/ az storage share create --account-name "${azurerm_storage_account.storage.name}" --name fslogix --quota "${var.share_size}"
+      ./env/usr/bin/az account set --subscription ${data.azurerm_subscription.current.subscription_id}
+      ./env/usr/bin/ az vm delete --resource-group ${azurerm_resource_group.myrg_shd.name} --name ${azurerm_windows_virtual_machine.temp_vm_for_st_join.name} --force-deletion none --yes
+      ./env/usr/bin/ az storage share create --account-name ${azurerm_storage_account.storage.name} --name fslogix --quota ${var.share_size}
     EOF
   }
   #### Delete Temp VM via Azure CLI ###
