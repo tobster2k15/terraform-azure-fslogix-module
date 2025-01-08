@@ -185,7 +185,7 @@ resource "azurerm_storage_share" "FSShare" {
   name             = "fslogix"
   quota            = var.share_size
   # enabled_protocol = var.share_protocol
-  storage_account_id = azurerm_storage_account.storage.id
+  storage_account_name = azurerm_storage_account.storage.name
 }
 
 resource "azurerm_storage_share" "additional_shares" {
