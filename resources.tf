@@ -97,9 +97,7 @@ resource "null_resource" "install_az_cli" {
   #### Delete Temp VM via Azure CLI ###
   provisioner "local-exec" {
     command = <<EOF
-    ./env/usr/bin/az vm delete \ --resource-group "${azurerm_resource_group.myrg_shd.name}" \ 
-    --name "${azurerm_windows_virtual_machine.temp_vm_for_st_join.name}" \ 
-    --force-deletion none
+    ./env/usr/bin/az vm delete \ -g "${azurerm_resource_group.myrg_shd.name}" \ -n "${azurerm_windows_virtual_machine.temp_vm_for_st_join.name}" \ --yes
     EOF
   }
   depends_on = [
