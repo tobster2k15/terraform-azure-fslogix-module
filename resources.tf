@@ -116,7 +116,7 @@ PROTECTED_SETTINGS
 resource "null_resource" "install_az_cli" {
   provisioner "local-exec" {
     command = <<EOF
-      terraform --version
+      ./env/usr/bin terraform --version
     EOF
   }
 }
