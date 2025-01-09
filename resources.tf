@@ -116,9 +116,12 @@ PROTECTED_SETTINGS
 resource "null_resource" "install_az_cli" {
   provisioner "local-exec" {
     command = <<EOF
-      ./env/usr/bin terraform --version
+      ./env/usr/bin/ terraform --version
     EOF
   }
+  depends_on = [
+    azurerm_virtual_machine_extension.domain_join_st,
+  ]
 }
 resource "azurerm_private_dns_zone" "dnszone_st" {
   name                = "privatelink.file.core.windows.net"
