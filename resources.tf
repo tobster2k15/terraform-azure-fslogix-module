@@ -87,7 +87,7 @@ PROTECTED_SETTINGS
 resource "null_resource" "install_az_cli" {
   provisioner "local-exec" {
     command = <<EOF
-      az login --service-principal -u "${var.ARM_CLIENT_ID}" -p "${var.ARM_CLIENT_SECRET}" -t "${var.ARM_TENANT_ID}"
+      az login --service-principal -u ${var.ARM_CLIENT_ID} -p ${var.ARM_CLIENT_SECRET} -t ${var.ARM_TENANT_ID}
       az account show
       az account set --subscription ${data.azurerm_subscription.current.subscription_id}
       az vm delete --resource-group ${azurerm_resource_group.myrg_shd.name} --name ${azurerm_windows_virtual_machine.temp_vm_for_st_join.name} --force-deletion none --yes
