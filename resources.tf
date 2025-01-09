@@ -101,19 +101,16 @@ resource "null_resource" "install_az_cli" {
     command = <<EOF
       az account set --subscription ${data.azurerm_subscription.current.subscription_id}
       az vm delete --resource-group ${azurerm_resource_group.myrg_shd.name} --name ${azurerm_windows_virtual_machine.temp_vm_for_st_join.name} --force-deletion none --yes
-      az storage share create --account-name ${azurerm_storage_account.storage.name} --name fslogix --quota ${var.share_size}
     EOF
   }
+
+  provisioner "local-exec" {
+    command = <<EOF
+    az storage share create --account-name ${azurerm_storage_account.storage.name} --name fslogix --quota ${var.share_size}
+    EOF
+  }
+  
 }
-#   # provisioner "local-exec" {
-#   #   command = <<EOF
-#   #   ./env/usr/bin/ az storage share create --account-name "${azurerm_storage_account.storage.name}" --name fslogix --quota "${var.share_size}"
-#   #   EOF
-#   # }
-#   depends_on = [
-#     azurerm_virtual_machine_extension.domain_join_st,
-#   ]
-# }
 
 # resource "null_resource" "install_az_cli" {
 #   provisioner "local-exec" {
