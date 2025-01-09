@@ -95,7 +95,7 @@ resource "null_resource" "install_az_cli" {
   depends_on  = [
     azurerm_virtual_machine_extension.domain_join_st
   ]
-}
+
   #### Delete Temp VM via Azure CLI ###
   provisioner "local-exec" {
     command = <<EOF
@@ -104,6 +104,7 @@ resource "null_resource" "install_az_cli" {
       az storage share create --account-name ${azurerm_storage_account.storage.name} --name fslogix --quota ${var.share_size}
     EOF
   }
+}
 #   # provisioner "local-exec" {
 #   #   command = <<EOF
 #   #   ./env/usr/bin/ az storage share create --account-name "${azurerm_storage_account.storage.name}" --name fslogix --quota "${var.share_size}"
