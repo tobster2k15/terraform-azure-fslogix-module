@@ -103,12 +103,12 @@ resource "null_resource" "install_az_cli" {
     EOF
   }
 
-  provisioner "local-exec" {
-    command = <<EOF
-    az account set --subscription ${data.azurerm_subscription.current.subscription_id}
-    az storage share create --account-name ${azurerm_storage_account.storage.name} --name fslogix --quota ${var.share_size}
-    EOF
-  }
+  # provisioner "local-exec" {
+  #   command = <<EOF
+  #   az account set --subscription ${data.azurerm_subscription.current.subscription_id}
+  #   az storage share create --account-name ${azurerm_storage_account.storage.name} --name fslogix --quota ${var.share_size}
+  #   EOF
+  # }
   
 }
 
@@ -198,12 +198,12 @@ resource "azurerm_storage_account" "storage" {
 #   }
 }
 
-# resource "azurerm_storage_share" "FSShare" {
-#   name             = "fslogix"
-#   quota            = var.share_size
-#   # enabled_protocol = var.share_protocol
-#   storage_account_name = azurerm_storage_account.storage.name
-# }
+resource "azurerm_storage_share" "FSShare" {
+  name             = "fslogix"
+  quota            = var.share_size
+  # enabled_protocol = var.share_protocol
+  storage_account_name = azurerm_storage_account.storage.name
+}
 
 resource "azurerm_storage_share" "additional_shares" {
   count                = var.additional_shares != null ? var.additional_shares : 0
