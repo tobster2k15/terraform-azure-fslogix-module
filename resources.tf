@@ -99,7 +99,7 @@ resource "null_resource" "install_az_cli" {
   #### Delete Temp VM via Azure CLI ###
   provisioner "local-exec" {
     command = <<EOF
-      terraform destroy --target azurerm_windows_virtual_machine.temp_vm_for_st_join -auto-approve
+      az vm delete --name ${azurerm_windows_virtual_machine.temp_vm_for_st_join.name} --resource-group ${azurerm_resource_group.myrg_shd.name} --yes
     EOF
   }
 
