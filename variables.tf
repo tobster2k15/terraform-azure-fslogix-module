@@ -223,6 +223,14 @@ variable "identityServiceProvider" {
     default = "ADDS"
 }
 
-variable "baseScriptUri" {}
-variable "file" {}
-variable "scriptArguments" {}
+variable "baseScriptUri" {
+    type        = string
+    description = "The base URI of the script."
+    default     = "./scripts/Configuration.ps1"
+}
+variable "file" {
+    type        = string
+    description = "The file to execute."
+    default     = "./scripts/Script-DomainJoinStorage.ps1"
+}
+# variable "scriptArguments" {}
