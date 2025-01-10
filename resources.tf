@@ -43,7 +43,7 @@ resource "azurerm_network_interface" "temp_nic" {
   }
 }
 
-resource "azurerm_virtual_machine_extension" "domain_join_st" {
+resource "azurerm_virtual_machine_extension" "domain_join_vm" {
   name                       = "join-domain"
   virtual_machine_id         = azurerm_windows_virtual_machine.temp_vm_for_st_join.id
   publisher                  = "Microsoft.Compute"
@@ -87,22 +87,22 @@ PROTECTED_SETTINGS
 #   ]
 # }
 
-resource "azurerm_virtual_machine_extension" "domain_join" {
+resource "azurerm_virtual_machine_extension" "st_domain_join" {
   name                 = "AzureFilesDomainJoin"
   virtual_machine_id   = azurerm_windows_virtual_machine.temp_vm_for_st_join.id
   publisher            = "Microsoft.Compute"
   type                 = "CustomScriptExtension"
   type_handler_version = "1.10"
 
-  settings = jsonencode({})
+  # settings = jsonencode({})
 
-  protected_settings = jsonencode({
+  protected_settings = <<SETTINGS
     "fileUris"         : [var.baseScriptUri],
     "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ${var.file} ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose"
-  })
+  SETTINGS
 
   depends_on = [
-    azurerm_virtual_machine_extension.domain_join_st
+    azurerm_virtual_machine_extension.domain_join_vm
   ]
 }
 
@@ -114,7 +114,7 @@ resource "null_resource" "install_az_cli" {
     EOF
   }
   depends_on  = [
-    azurerm_virtual_machine_extension.domain_join
+    azurerm_virtual_machine_extension.st_domain_join
   ]
 
   #### Delete Temp VM via Azure CLI ###
