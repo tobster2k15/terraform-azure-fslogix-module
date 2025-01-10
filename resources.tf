@@ -104,7 +104,7 @@ resource "null_resource" "install_az_cli" {
   }
   provisioner "local-exec" {
     command = <<EOF
-    az network nic delete --resource-group ${azurerm_resource_group.myrg_shd.name} --nics ${azurerm_network_interface.temp_nic.name}
+    az network nic delete --resource-group ${azurerm_resource_group.myrg_shd.name} --name ${azurerm_network_interface.temp_nic.name}
     EOF
   }
   provisioner "local-exec" {
