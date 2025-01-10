@@ -94,14 +94,12 @@ resource "azurerm_virtual_machine_extension" "st_domain_join" {
   type                 = "CustomScriptExtension"
   type_handler_version = "1.10"
 
-  # settings = jsonencode({})
+  settings = jsonencode({})
 
-  protected_settings = <<SETTINGS
-  {
+  protected_settings = jsonencode({
     "fileUris"         : [var.baseScriptUri],
     "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ${var.file} ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose"
-  }
-  SETTINGS
+  })
 
   depends_on = [
     azurerm_virtual_machine_extension.domain_join_vm
