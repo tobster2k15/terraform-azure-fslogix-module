@@ -69,19 +69,38 @@ PROTECTED_SETTINGS
   }
 }
 
-resource "azurerm_virtual_machine_extension" "st_join" {
-  name                 = "storage_account_domain_join"
+# resource "azurerm_virtual_machine_extension" "st_join" {
+#   name                 = "storage_account_domain_join"
+#   virtual_machine_id   = azurerm_windows_virtual_machine.temp_vm_for_st_join.id
+#   publisher            = "Microsoft.Compute"
+#   type                 = "CustomScriptExtension"
+#   type_handler_version = "1.9"
+
+#   protected_settings = <<SETTINGS
+#   {    
+#     fileUris: array(baseScriptUri)
+#     commandToExecute: 'powershell -ExecutionPolicy Unrestricted -File ${file} ${local.varStorageToDomainScriptArgs} -AdminUserPassword ${var.domain_pass} -verbose'
+#   }
+#   SETTINGS
+#   depends_on = [
+#     azurerm_virtual_machine_extension.domain_join_st
+#   ]
+# }
+
+resource "azurerm_virtual_machine_extension" "domain_join" {
+  name                 = "AzureFilesDomainJoin"
   virtual_machine_id   = azurerm_windows_virtual_machine.temp_vm_for_st_join.id
   publisher            = "Microsoft.Compute"
   type                 = "CustomScriptExtension"
-  type_handler_version = "1.9"
+  type_handler_version = "1.10"
 
-  protected_settings = <<SETTINGS
-  {    
-    fileUris: array(baseScriptUri)
-    commandToExecute: 'powershell -ExecutionPolicy Unrestricted -File ${file} ${local.varStorageToDomainScriptArgs} -AdminUserPassword ${var.domain_pass} -verbose'
-  }
-  SETTINGS
+  settings = jsonencode({})
+
+  protected_settings = jsonencode({
+    "fileUris"         : [var.baseScriptUri],
+    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ${var.file} ${local.storage_to_domain_script_args} -AdminUserPassword ${var.adminUserPassword} -verbose"
+  })
+
   depends_on = [
     azurerm_virtual_machine_extension.domain_join_st
   ]
