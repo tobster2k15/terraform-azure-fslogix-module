@@ -109,7 +109,7 @@ resource "null_resource" "install_az_cli" {
   }
   provisioner "local-exec" {
     command = <<EOF
-    az disk delete --name osdisk --resource-group ${azurerm_resource_group.myrg_shd.name}
+    az disk delete --name osdisk --resource-group ${azurerm_resource_group.myrg_shd.name} --yes
     EOF
   }
   
