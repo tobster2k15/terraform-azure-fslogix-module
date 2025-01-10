@@ -114,7 +114,7 @@ resource "null_resource" "install_az_cli" {
     EOF
   }
   depends_on  = [
-    azurerm_virtual_machine_extension.domain_join_st
+    azurerm_virtual_machine_extension.domain_join
   ]
 
   #### Delete Temp VM via Azure CLI ###
