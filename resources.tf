@@ -100,17 +100,18 @@ resource "null_resource" "install_az_cli" {
   provisioner "local-exec" {
     command = <<EOF
       az vm delete --name ${azurerm_windows_virtual_machine.temp_vm_for_st_join.name} --resource-group ${azurerm_resource_group.myrg_shd.name} --yes
-      az network nic delete --resource-group ${azurerm_resource_group.myrg_shd.name} --nics ${azurerm_network_interface.temp_nic.name}
-      az disk delete --name osdisk --resource-group ${azurerm_resource_group.myrg_shd.name}
     EOF
   }
-
-  # provisioner "local-exec" {
-  #   command = <<EOF
-  #   
-  #   az storage share create --account-name ${azurerm_storage_account.storage.name} --name fslogix --quota ${var.share_size}
-  #   EOF
-  # }
+  provisioner "local-exec" {
+    command = <<EOF
+    az network nic delete --resource-group ${azurerm_resource_group.myrg_shd.name} --nics ${azurerm_network_interface.temp_nic.name}
+    EOF
+  }
+  provisioner "local-exec" {
+    command = <<EOF
+    az disk delete --name osdisk --resource-group ${azurerm_resource_group.myrg_shd.name}
+    EOF
+  }
   
 }
 
