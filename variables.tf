@@ -234,3 +234,9 @@ variable "file" {
     default     = "./scripts/Script-DomainJoinStorage.ps1"
 }
 # variable "scriptArguments" {}
+
+variable "securityPrincipalName" {
+    type        = string
+    description = "The security principal name."
+    default     = ""
+}

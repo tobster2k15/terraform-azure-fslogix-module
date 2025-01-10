@@ -98,7 +98,7 @@ resource "azurerm_virtual_machine_extension" "domain_join" {
 
   protected_settings = jsonencode({
     "fileUris"         : [var.baseScriptUri],
-    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ${var.file} ${local.storage_to_domain_script_args} -AdminUserPassword ${var.adminUserPassword} -verbose"
+    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ${var.file} ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose"
   })
 
   depends_on = [
