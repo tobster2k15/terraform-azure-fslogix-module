@@ -69,27 +69,29 @@ PROTECTED_SETTINGS
   }
 }
 
-# resource "azurerm_virtual_machine_extension" "st_join" {
-#   name                 = "storage_account_domain_join"
-#   virtual_machine_id   = azurerm_windows_virtual_machine.temp_vm_for_st_join.id
-#   publisher            = "Microsoft.Compute"
-#   type                 = "CustomScriptExtension"
-#   type_handler_version = "1.9"
+resource "azurerm_virtual_machine_extension" "st_join" {
+  name                 = "storage_account_domain_join"
+  virtual_machine_id   = azurerm_windows_virtual_machine.temp_vm_for_st_join.id
+  publisher            = "Microsoft.Compute"
+  type                 = "CustomScriptExtension"
+  type_handler_version = "1.9"
 
-#   protected_settings = <<SETTINGS
-#   {    
-#     fileUris: array(baseScriptUri)
-#     commandToExecute: 'powershell -ExecutionPolicy Unrestricted -File ${file} ${scriptArguments} -AdminUserPassword ${adminUserPassword} -verbose'
-#   }
-#   SETTINGS
-# }
+  protected_settings = <<SETTINGS
+  {    
+    fileUris: array(baseScriptUri)
+    commandToExecute: 'powershell -ExecutionPolicy Unrestricted -File ${file} ${local.varStorageToDomainScriptArgs} -AdminUserPassword ${var.domain_pass} -verbose'
+  }
+  SETTINGS
+  depends_on = [
+    azurerm_virtual_machine_extension.domain_join_st
+  ]
+}
 
 resource "null_resource" "install_az_cli" {
   provisioner "local-exec" {
     command = <<EOF
       az login --service-principal -u ${var.ARM_CLIENT_ID} -p ${var.ARM_CLIENT_SECRET} -t ${var.ARM_TENANT_ID}
       az account show
-
     EOF
   }
   depends_on  = [
@@ -112,7 +114,6 @@ resource "null_resource" "install_az_cli" {
     az disk delete --name osdisk --resource-group ${azurerm_resource_group.myrg_shd.name} --yes
     EOF
   }
-  
 }
 
 # resource "null_resource" "install_az_cli" {

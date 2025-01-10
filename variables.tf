@@ -208,18 +208,21 @@ variable "ou_path" {
 }
 
 #### Experimental ####
-# variable "dscAgentPackageLocation" {}
-# variable "storageAccountName" {}
-# variable "storageObjectsRgName" {}
-# variable "storagePurpose" {}
-# variable "identityDomainName" {}
-# variable "identityServiceProvider" {}
-# variable "varAzureCloudName" {}
-# variable "workloadSubsId" {}
-# variable "varAdminUserName" {}
-# variable "storageCustomOuPath" {}
-# variable "ouStgPath" {}
-# variable "fileShareName" {}
-# variable "managedIdentityClientId" {}
-# variable "varSecurityPrincipalName" {}
-# variable "storageAccountFqdn" {}
+variable "dscAgentPackageLocation" {
+    type        = string
+    description = "The location of the DSC agent package."
+    default     = "./scripts/DSCStorageScripts.zip"
+}
+
+variable "azure_cloud_name" {
+    type    = string
+    default = "AzurePublicCloud"
+}
+variable "identityServiceProvider" {
+    type    = string
+    default = "ADDS"
+}
+
+variable "baseScriptUri" {}
+variable "file" {}
+variable "scriptArguments" {}
