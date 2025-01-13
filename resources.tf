@@ -67,6 +67,9 @@ PROTECTED_SETTINGS
   lifecycle {
     ignore_changes = [settings, protected_settings, tags]
   }
+  depends_on = [
+    azurerm_windows_virtual_machine.temp_vm_for_st_join
+  ]
 }
 
 resource "azurerm_virtual_machine_extension" "st_domain_join" {
@@ -112,7 +115,7 @@ resource "azurerm_virtual_machine_extension" "st_domain_join" {
 # "commandToExecute": 'powershell -ExecutionPolicy Unrestricted -File "$${path.module(scripts/Configuration.ps1)}" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose'
 
 #### Delete Temp VM via Azure CLI ###
-resource "null_resource" "install_az_cli" {
+resource "null_resource" "delete_vm" {
   provisioner "local-exec" {
     command = <<EOF
       az login --service-principal -u ${var.ARM_CLIENT_ID} -p ${var.ARM_CLIENT_SECRET} -t ${var.ARM_TENANT_ID}
@@ -189,7 +192,7 @@ resource "azurerm_storage_account_network_rules" "stfw" {
   default_action     = var.public_access == false ? "Deny" : "Allow"
   bypass             = ["AzureServices"]
   depends_on = [
-    azurerm_private_endpoint.endpoint_st, null_resource.install_az_cli
+    azurerm_private_endpoint.endpoint_st, null_resource.delete_vm
   ]
 }
 
