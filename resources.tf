@@ -76,10 +76,10 @@ resource "azurerm_virtual_machine_extension" "st_domain_join" {
   type                 = "CustomScriptExtension"
   type_handler_version = "1.9"
 
-  settings = <<SETTINGS
+  protected_settings = <<SETTINGS
   {
     "fileUris": "array(baseScriptUri)"
-    "commandToExecute": 'powershell -ExecutionPolicy Unrestricted -File "$${path.module(scripts/Configuration.ps1)}" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose'
+    "commandToExecute": "powershell -command -ExecutionPolicy Unrestricted -File "./scripts" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose"
   }
   SETTINGS
     depends_on = [
@@ -108,6 +108,8 @@ resource "azurerm_virtual_machine_extension" "st_domain_join" {
 #     azurerm_storage_share.FSShare
 #   ]
 # }
+
+# "commandToExecute": 'powershell -ExecutionPolicy Unrestricted -File "$${path.module(scripts/Configuration.ps1)}" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose'
 
 #### Delete Temp VM via Azure CLI ###
 resource "null_resource" "install_az_cli" {
