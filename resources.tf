@@ -78,8 +78,8 @@ resource "azurerm_virtual_machine_extension" "st_domain_join" {
 
   protected_settings = <<SETTINGS
   {
-    "fileUris": "array(baseScriptUri)",
-    "commandToExecute": "powershell -command -ExecutionPolicy Unrestricted -File "./scripts/Configuration.ps1" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose"
+    "fileUris": ["${var.baseScriptUri}"],
+    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File \"${path.module}/scripts/Configuration.ps1\" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose"
   }
   SETTINGS
     depends_on = [
