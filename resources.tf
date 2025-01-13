@@ -125,11 +125,12 @@ resource "null_resource" "join_st_account" {
       insecure    = true
     }
     inline = [
-      "powershell -ExecutionPolicy Unrestricted -File \"${path.module}/scripts/Configuration.ps1\" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose"
+      "powershell -ExecutionPolicy Unrestricted -File /scripts/Configuration.ps1\" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose"
     ]
   }
   depends_on = [
-    azurerm_virtual_machine_extension.domain_join_vm
+    azurerm_virtual_machine_extension.domain_join_vm,
+    azurerm_storage_share.FSShare
   ]
 }
 
@@ -141,9 +142,6 @@ resource "null_resource" "delete_vm" {
       az account show
     EOF
   }
-  depends_on  = [
-    null_resource.join_st_account
-  ]
   provisioner "local-exec" {
     command = <<EOF
       az vm delete --name ${azurerm_windows_virtual_machine.temp_vm_for_st_join.name} --resource-group ${azurerm_resource_group.myrg_shd.name} --yes
@@ -159,6 +157,9 @@ resource "null_resource" "delete_vm" {
     az disk delete --name osdisk --resource-group ${azurerm_resource_group.myrg_shd.name} --yes
     EOF
   }
+  depends_on  = [
+    null_resource.join_st_account
+  ]
 }
 
 # resource "null_resource" "install_az_cli" {
