@@ -111,7 +111,7 @@ PROTECTED_SETTINGS
 #     azurerm_storage_share.FSShare
 #   ]
 # }
-
+    # -ExecutionPolicy Unrestricted -File /scripts/Configuration.ps1\" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose
 # "commandToExecute": 'powershell -ExecutionPolicy Unrestricted -File "$${path.module(scripts/Configuration.ps1)}" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose'
 
 resource "null_resource" "join_st_account" {
@@ -125,7 +125,7 @@ resource "null_resource" "join_st_account" {
       insecure    = true
     }
     inline = [
-      "powershell -ExecutionPolicy Unrestricted -File /scripts/Configuration.ps1\" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose"
+      "powershell Get-Date"
     ]
   }
   depends_on = [
