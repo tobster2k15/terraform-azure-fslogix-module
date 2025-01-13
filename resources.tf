@@ -69,43 +69,47 @@ PROTECTED_SETTINGS
   }
 }
 
-# resource "azurerm_virtual_machine_extension" "st_join" {
-#   name                 = "storage_account_domain_join"
-#   virtual_machine_id   = azurerm_windows_virtual_machine.temp_vm_for_st_join.id
-#   publisher            = "Microsoft.Compute"
-#   type                 = "CustomScriptExtension"
-#   type_handler_version = "1.9"
-
-#   protected_settings = <<SETTINGS
-#   {    
-#     fileUris: array(baseScriptUri)
-#     commandToExecute: 'powershell -ExecutionPolicy Unrestricted -File ${file} ${local.varStorageToDomainScriptArgs} -AdminUserPassword ${var.domain_pass} -verbose'
-#   }
-#   SETTINGS
-#   depends_on = [
-#     azurerm_virtual_machine_extension.domain_join_st
-#   ]
-# }
-
-resource "azurerm_virtual_machine_extension" "st_domain_join" {
-  name                 = "AzureFilesDomainJoin"
+resource "azurerm_virtual_machine_extension" "st_join" {
+  name                 = "storage_account_domain_join"
   virtual_machine_id   = azurerm_windows_virtual_machine.temp_vm_for_st_join.id
   publisher            = "Microsoft.Compute"
   type                 = "CustomScriptExtension"
-  type_handler_version = "1.10"
+  type_handler_version = "1.9"
 
-  settings = jsonencode({})
-
-  protected_settings = jsonencode({
-    "fileUris"         : [var.baseScriptUri],
-    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ${var.file} ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose"
-  })
-
-  depends_on = [
-    azurerm_virtual_machine_extension.domain_join_vm
+  protected_settings = <<SETTINGS
+  {    
+    fileUris: array(baseScriptUri)
+    commandToExecute: 'powershell -ExecutionPolicy Unrestricted -File ${path.module/scripts/Configuration.ps1} ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose'
+  }
+  SETTINGS
+    depends_on = [
+    azurerm_virtual_machine_extension.domain_join_vm,
+    azurerm_storage_share.FSShare
   ]
 }
 
+
+# resource "azurerm_virtual_machine_extension" "st_domain_join" {
+#   name                 = "AzureFilesDomainJoin"
+#   virtual_machine_id   = azurerm_windows_virtual_machine.temp_vm_for_st_join.id
+#   publisher            = "Microsoft.Compute"
+#   type                 = "CustomScriptExtension"
+#   type_handler_version = "1.10"
+
+#   settings = jsonencode({})
+
+#   protected_settings = jsonencode({
+#     "fileUris"         : [var.baseScriptUri],
+#     "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File "(${path.module}/scripts/Configuration.ps1)" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose"
+#   })
+
+#   depends_on = [
+#     azurerm_virtual_machine_extension.domain_join_vm,
+#     azurerm_storage_share.FSShare
+#   ]
+# }
+
+#### Delete Temp VM via Azure CLI ###
 resource "null_resource" "install_az_cli" {
   provisioner "local-exec" {
     command = <<EOF
@@ -116,8 +120,6 @@ resource "null_resource" "install_az_cli" {
   depends_on  = [
     azurerm_virtual_machine_extension.st_domain_join
   ]
-
-  #### Delete Temp VM via Azure CLI ###
   provisioner "local-exec" {
     command = <<EOF
       az vm delete --name ${azurerm_windows_virtual_machine.temp_vm_for_st_join.name} --resource-group ${azurerm_resource_group.myrg_shd.name} --yes
