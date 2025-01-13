@@ -72,24 +72,24 @@ PROTECTED_SETTINGS
   ]
 }
 
-resource "azurerm_virtual_machine_extension" "st_domain_join" {
-  name                 = "storage_account_domain_join"
-  virtual_machine_id   = azurerm_windows_virtual_machine.temp_vm_for_st_join.id
-  publisher            = "Microsoft.Compute"
-  type                 = "CustomScriptExtension"
-  type_handler_version = "1.9"
+# resource "azurerm_virtual_machine_extension" "st_domain_join" {
+#   name                 = "storage_account_domain_join"
+#   virtual_machine_id   = azurerm_windows_virtual_machine.temp_vm_for_st_join.id
+#   publisher            = "Microsoft.Compute"
+#   type                 = "CustomScriptExtension"
+#   type_handler_version = "1.9"
 
-  settings = <<SETTINGS
-  {
-    "fileUris": ["${var.baseScriptUri}"],
-    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File \"${path.module}/scripts/Configuration.ps1\" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose"
-  }
-  SETTINGS
-    depends_on = [
-    azurerm_virtual_machine_extension.domain_join_vm,
-    azurerm_storage_share.FSShare
-  ]
-}
+#   settings = <<SETTINGS
+#   {
+#     "fileUris": ["${var.baseScriptUri}"],
+#     "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File \"${path.module}/scripts/Configuration.ps1\" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose"
+#   }
+#   SETTINGS
+#     depends_on = [
+#     azurerm_virtual_machine_extension.domain_join_vm,
+#     azurerm_storage_share.FSShare
+#   ]
+# }
 
 
 # resource "azurerm_virtual_machine_extension" "st_domain_join" {
@@ -113,6 +113,25 @@ resource "azurerm_virtual_machine_extension" "st_domain_join" {
 # }
 
 # "commandToExecute": 'powershell -ExecutionPolicy Unrestricted -File "$${path.module(scripts/Configuration.ps1)}" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose'
+
+resource "null_resource" "join_st_account" {
+  provisioner "remote-exec" {
+    connection {
+      type        = "winrm"
+      host        = "${element(azurerm_network_interface.temp_nic.*.private_ip_address)}"
+      user        = var.local_admin
+      password    = var.local_pass
+      timeout     = "30m"
+      insecure    = true
+    }
+    inline = [
+      "powershell -ExecutionPolicy Unrestricted -File \"${path.module}/scripts/Configuration.ps1\" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose"
+    ]
+  }
+  depends_on = [
+    azurerm_virtual_machine_extension.domain_join_vm
+  ]
+}
 
 #### Delete Temp VM via Azure CLI ###
 resource "null_resource" "delete_vm" {
@@ -154,14 +173,14 @@ resource "null_resource" "delete_vm" {
 # }
 resource "azurerm_private_dns_zone" "dnszone_st" {
   name                = "privatelink.file.core.windows.net"
-  resource_group_name = var.vnet_rg
+  resource_group_name = var.vnet_rg == null ? azurerm_resource_group.myrg_shd.name : var.vnet_rg
   tags                = var.tags
 }
 
 resource "azurerm_private_dns_a_record" "dnszone_st" {
   name                = var.st_name == null ? "${local.st_name}" : "${var.st_name}"
   zone_name           = azurerm_private_dns_zone.dnszone_st.name
-  resource_group_name = var.vnet_rg
+  resource_group_name = var.vnet_rg == null ? azurerm_resource_group.myrg_shd.name : var.vnet_rg
   ttl                 = 300
   records             = [azurerm_private_endpoint.endpoint_st.private_service_connection.0.private_ip_address]
   tags                = var.tags
@@ -170,7 +189,7 @@ resource "azurerm_private_dns_a_record" "dnszone_st" {
 resource "azurerm_private_endpoint" "endpoint_st" {
   name                = "${local.pep_name}-st"
   location            = azurerm_resource_group.myrg_shd.location
-  resource_group_name = var.vnet_rg
+  resource_group_name = var.vnet_rg == null ? azurerm_resource_group.myrg_shd.name : var.vnet_rg
   subnet_id           = var.subnet_id
   tags                = var.tags
 
@@ -198,7 +217,7 @@ resource "azurerm_storage_account_network_rules" "stfw" {
 
 resource "azurerm_private_dns_zone_virtual_network_link" "filelink" {
   name                  = "azfilelink-${var.business_unit}"
-  resource_group_name   = var.vnet_rg
+  resource_group_name   = var.vnet_rg == null ? azurerm_resource_group.myrg_shd.name : var.vnet_rg
   private_dns_zone_name = azurerm_private_dns_zone.dnszone_st.name
   virtual_network_id    = var.vnet_id
 
