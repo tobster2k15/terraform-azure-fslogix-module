@@ -118,7 +118,7 @@ resource "null_resource" "join_st_account" {
   provisioner "remote-exec" {
     connection {
       type        = "winrm"
-      host        = "${element(azurerm_network_interface.temp_nic.*.private_ip_address)}"
+      host        = azurerm_network_interface.temp_nic.private_ip_address
       user        = var.local_admin
       password    = var.local_pass
       timeout     = "30m"
@@ -142,7 +142,7 @@ resource "null_resource" "delete_vm" {
     EOF
   }
   depends_on  = [
-    azurerm_virtual_machine_extension.st_domain_join
+    null_resource.join_st_account
   ]
   provisioner "local-exec" {
     command = <<EOF
