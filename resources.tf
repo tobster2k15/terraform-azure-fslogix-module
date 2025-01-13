@@ -76,8 +76,9 @@ resource "azurerm_virtual_machine_extension" "st_domain_join" {
   type                 = "CustomScriptExtension"
   type_handler_version = "1.9"
 
-  protected_settings = <<SETTINGS
-  {    
+  settings = <<SETTINGS
+  {
+    fileUris: array(baseScriptUri)
     commandToExecute: 'powershell -ExecutionPolicy Unrestricted -File "$${path.module(scripts/Configuration.ps1)}" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose'
   }
   SETTINGS
