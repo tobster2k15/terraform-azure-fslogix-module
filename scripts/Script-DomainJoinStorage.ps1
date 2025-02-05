@@ -67,6 +67,16 @@ Install-Module -Name Az.Accounts -Force
 Install-Module -Name Az.Storage -Force
 Install-Module -Name Az.Network -Force
 Install-Module -Name Az.Resources -Force
+Restart-Computer -Force
+Import-Module Az.Accounts
+Import-Module Az.Storage
+Import-Module Az.Network
+Import-Module Az.Resources
+$AzFilesZipLocation = Get-ChildItem -Path $PSScriptRoot -Filter "AzFilesHybrid*.zip"
+	Expand-Archive $AzFilesZipLocation.FullName -DestinationPath $PSScriptRoot -Force
+	Set-Location $PSScriptRoot
+	$AzFilesHybridPath = (Join-Path $PSScriptRoot "CopyToPSPath.ps1")
+	& $AzFilesHybridPath
 
 # $modules = @{
 #     PowershellGet = '2.8.5.201'
