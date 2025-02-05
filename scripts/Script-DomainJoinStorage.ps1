@@ -64,10 +64,10 @@ Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 Restart-Computer -Force
 $modules = @{
     PowershellGet = '2.8.5.201'
-    "Az.Accounts" = '4.0.1'
-    "Az.Storage" = '7.5.0'
-    "Az.Network" = '7.12.0'
-    "Az.Resources" = '7.7.0'
+    'Az.Accounts' = '4.0.1'
+    'Az.Storage' = '7.5.0'
+    'Az.Network' = '7.12.0'
+    'Az.Resources' = '7.7.0'
 }
 $modules.GetEnumerator() | ForEach-Object {
     Install-Module -Name $_.Name -MinimumVersion $_.Value -Force
