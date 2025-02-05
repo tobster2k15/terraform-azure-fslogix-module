@@ -75,14 +75,14 @@ $modules.GetEnumerator() | ForEach-Object {
 }
 
 Import-Module Az.Accounts
+Start-Sleep -Seconds 5
 Import-Module Az.Storage
+Start-Sleep -Seconds 5
 Import-Module Az.Network
+Start-Sleep -Seconds 5
 Import-Module Az.Resources
-Restart-Computer -Force
-Import-Module Az.Accounts
-Import-Module Az.Storage
-Import-Module Az.Network
-Import-Module Az.Resources
+Start-Sleep -Seconds 5
+
 $AzFilesZipLocation = Get-ChildItem -Path $PSScriptRoot -Filter "AzFilesHybrid*.zip"
 	Expand-Archive $AzFilesZipLocation.FullName -DestinationPath $PSScriptRoot -Force
 	Set-Location $PSScriptRoot
