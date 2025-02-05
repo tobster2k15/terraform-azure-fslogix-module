@@ -62,11 +62,22 @@ Set-NetFirewallProfile -Profile Domain, Public, Private -Enabled False
 Install-windowsfeature -name AD-Domain-Services -IncludeManagementTools
 Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 Restart-Computer -Force
-Install-Module -Name PowershellGet -MinimumVersion 2.2.4.1 -Force
-Install-Module -Name Az.Accounts -Force
-Install-Module -Name Az.Storage -Force
-Install-Module -Name Az.Network -Force
-Install-Module -Name Az.Resources -Force
+$modules = @{
+    PowershellGet = '2.8.5.201'
+    "Az.Accounts" = '4.0.1'
+    "Az.Storage" = '7.5.0'
+    "Az.Network" = '7.12.0'
+    "Az.Resources" = '7.7.0'
+}
+
+$modules.GetEnumerator() | ForEach-Object {
+    Install-Module -Name $_.Name -MinimumVersion $_.Value -Force
+}
+
+Import-Module Az.Accounts
+Import-Module Az.Storage
+Import-Module Az.Network
+Import-Module Az.Resources
 Restart-Computer -Force
 Import-Module Az.Accounts
 Import-Module Az.Storage
