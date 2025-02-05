@@ -69,10 +69,11 @@ $modules = @{
     "Az.Network" = '7.12.0'
     "Az.Resources" = '7.7.0'
 }
-
 $modules.GetEnumerator() | ForEach-Object {
     Install-Module -Name $_.Name -MinimumVersion $_.Value -Force
 }
+
+Restart-Computer -Force
 
 Import-Module Az.Accounts
 Start-Sleep -Seconds 5
