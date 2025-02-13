@@ -4,73 +4,73 @@ resource "azurerm_resource_group" "myrg_shd" {
   tags     = var.tags
 }
 
-resource "azurerm_windows_virtual_machine" "temp_vm_for_st_join" {
-  name                  = "vmstjoin001"
-  resource_group_name   = azurerm_resource_group.myrg_shd.name
-  location              = azurerm_resource_group.myrg_shd.location
-  network_interface_ids = azurerm_network_interface.temp_nic.*.id
-  admin_username        = var.local_admin
-  admin_password        = var.local_pass
-  size                  = "Standard_D4s_v4"
-  tags = merge(var.tags, {
-    Automation = "Temp Deploy for Storage Account Domain Join"
-  })
-  os_disk {
-    name                 = "osdisk"
-    caching              = "ReadWrite"
-    storage_account_type = var.os_disk_type
-  }
-  source_image_reference {
-    publisher = "MicrosoftWindowsServer"
-    offer     = "WindowsServer"
-    sku       = "2022-Datacenter"
-    version   = "latest"
-  }
-  depends_on = [
-    azurerm_network_interface.temp_nic
-  ]
-}
+# resource "azurerm_windows_virtual_machine" "temp_vm_for_st_join" {
+#   name                  = "vmstjoin001"
+#   resource_group_name   = azurerm_resource_group.myrg_shd.name
+#   location              = azurerm_resource_group.myrg_shd.location
+#   network_interface_ids = azurerm_network_interface.temp_nic.*.id
+#   admin_username        = var.local_admin
+#   admin_password        = var.local_pass
+#   size                  = "Standard_D4s_v4"
+#   tags = merge(var.tags, {
+#     Automation = "Temp Deploy for Storage Account Domain Join"
+#   })
+#   os_disk {
+#     name                 = "osdisk"
+#     caching              = "ReadWrite"
+#     storage_account_type = var.os_disk_type
+#   }
+#   source_image_reference {
+#     publisher = "MicrosoftWindowsServer"
+#     offer     = "WindowsServer"
+#     sku       = "2022-Datacenter"
+#     version   = "latest"
+#   }
+#   depends_on = [
+#     azurerm_network_interface.temp_nic
+#   ]
+# }
 
-resource "azurerm_network_interface" "temp_nic" {
-  name                = "${local.nic_name}-temp"
-  resource_group_name = azurerm_resource_group.myrg_shd.name
-  location            = azurerm_resource_group.myrg_shd.location
-  tags                = var.tags
-  ip_configuration {
-    name                          = "testconfiguration1"
-    subnet_id                     = var.subnet_id
-    private_ip_address_allocation = "Dynamic"
-  }
-}
+# resource "azurerm_network_interface" "temp_nic" {
+#   name                = "${local.nic_name}-temp"
+#   resource_group_name = azurerm_resource_group.myrg_shd.name
+#   location            = azurerm_resource_group.myrg_shd.location
+#   tags                = var.tags
+#   ip_configuration {
+#     name                          = "testconfiguration1"
+#     subnet_id                     = var.subnet_id
+#     private_ip_address_allocation = "Dynamic"
+#   }
+# }
 
-resource "azurerm_virtual_machine_extension" "domain_join_vm" {
-  name                       = "join-domain"
-  virtual_machine_id         = azurerm_windows_virtual_machine.temp_vm_for_st_join.id
-  publisher                  = "Microsoft.Compute"
-  type                       = "JsonADDomainExtension"
-  type_handler_version       = "1.3"
-  auto_upgrade_minor_version = true
-  settings                   = <<SETTINGS
-    {
-      "Name": "${var.domain}",
-      "OUPath": "${var.ou_path}",
-      "User": "${var.domain_user}@${var.domain}",
-      "Restart": "true",
-      "Options": "3"
-    }
-SETTINGS
-  protected_settings         = <<PROTECTED_SETTINGS
-    {
-      "Password": "${var.domain_pass}"
-    }
-PROTECTED_SETTINGS
-  lifecycle {
-    ignore_changes = [settings, protected_settings, tags]
-  }
-  depends_on = [
-    azurerm_windows_virtual_machine.temp_vm_for_st_join
-  ]
-}
+# resource "azurerm_virtual_machine_extension" "domain_join_vm" {
+#   name                       = "join-domain"
+#   virtual_machine_id         = azurerm_windows_virtual_machine.temp_vm_for_st_join.id
+#   publisher                  = "Microsoft.Compute"
+#   type                       = "JsonADDomainExtension"
+#   type_handler_version       = "1.3"
+#   auto_upgrade_minor_version = true
+#   settings                   = <<SETTINGS
+#     {
+#       "Name": "${var.domain}",
+#       "OUPath": "${var.ou_path}",
+#       "User": "${var.domain_user}@${var.domain}",
+#       "Restart": "true",
+#       "Options": "3"
+#     }
+# SETTINGS
+#   protected_settings         = <<PROTECTED_SETTINGS
+#     {
+#       "Password": "${var.domain_pass}"
+#     }
+# PROTECTED_SETTINGS
+#   lifecycle {
+#     ignore_changes = [settings, protected_settings, tags]
+#   }
+#   depends_on = [
+#     azurerm_windows_virtual_machine.temp_vm_for_st_join
+#   ]
+# }
 
 # resource "azurerm_virtual_machine_extension" "st_domain_join" {
 #   name                 = "storage_account_domain_join"
@@ -114,54 +114,72 @@ PROTECTED_SETTINGS
     # -ExecutionPolicy Unrestricted -File /scripts/Configuration.ps1\" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose
 # "commandToExecute": 'powershell -ExecutionPolicy Unrestricted -File "$${path.module(scripts/Configuration.ps1)}" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose'
 
-resource "null_resource" "join_st_account" {
-  provisioner "remote-exec" {
-    connection {
-      type        = "winrm"
-      host        = azurerm_network_interface.temp_nic.private_ip_address
-      user        = var.local_admin
-      password    = var.local_pass
-      timeout     = "30m"
-      insecure    = true
-    }
-    inline = [
-      "powershell Get-Date"
-    ]
+# resource "null_resource" "join_st_account" {
+#   provisioner "remote-exec" {
+#     connection {
+#       type        = "winrm"
+#       host        = azurerm_network_interface.temp_nic.private_ip_address
+#       user        = var.local_admin
+#       password    = var.local_pass
+#       timeout     = "30m"
+#       insecure    = true
+#     }
+#     inline = [
+#       "powershell Get-Date"
+#     ]
+#   }
+#   depends_on = [
+#     azurerm_virtual_machine_extension.domain_join_vm,
+#     azurerm_storage_share.FSShare
+#   ]
+# }
+
+resource "null_resource" "domain_join_from_local_machine" {
+
+  provisioner "local-exec" {
+    command = <<EOF
+    Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
+    Invoke-WebRequest "https://github.com/Azure-Samples/azure-files-samples/releases/download/v0.3.2/AzFilesHybrid.zip" -OutFile "${var.download_path}"
+    Expand-Archive -Path "${var.download_path}" -DestinationPath "${var.destination_path}"
+    $SecurePassword = ConvertTo-SecureString -String '${var.ARM_CLIENT_SECRET}' -AsPlainText -Force
+    $TenantId = '${var.ARM_TENANT_ID}'
+    $ApplicationId = '${var.ARM_CLIENT_ID}'
+    $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ApplicationId, $SecurePassword
+    Connect-AzAccount -ServicePrincipal -TenantId $TenantId -Credential $Credential
+    $SubscriptionId = '${var.ARM_SUBSCRIPTION_ID}'
+    Select-AzSubscription -SubscriptionId $SubscriptionId
+    EOF
+    interpreter = ["PowerShell", "-Command"]
   }
-  depends_on = [
-    azurerm_virtual_machine_extension.domain_join_vm,
-    azurerm_storage_share.FSShare
-  ]
+
+  provisioner "local-exec" {
+    command = <<EOF
+    Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
+    cd "${var.destination_path}"
+    .\CopyToPSPath.ps1
+    Import-Module -Name AzFilesHybrid -Force
+    Import-Module -Name Az.Network -Force
+    Import-Module -Name Az.Storage -Force
+    Import-Module -Name Az.Resources -Force
+    $ResourceGroupName = "${azurerm_resource_group.myrg_shd.name}"
+    $StorageAccountName = "${azurerm_storage_account.storage.name}"
+    $SamAccountName = "${azurerm_storage_account.storage.name}"
+    $DomainAccountType = "ComputerAccount"
+    $OuDistinguishedName = "${var.avd_ou_path}"
+    Join-AzStorageAccount `
+        -ResourceGroupName $ResourceGroupName `
+        -StorageAccountName $StorageAccountName `
+        -SamAccountName $SamAccountName `
+        -DomainAccountType $DomainAccountType `
+        -OrganizationalUnitDistinguishedName $OuDistinguishedName
+    EOF  
+    interpreter = ["PowerShell", "-Command"]
+  }
+  depends_on = [azurerm_storage_account.storage]
 }
+
 
 #### Delete Temp VM via Azure CLI ###
-resource "null_resource" "delete_vm" {
-  provisioner "local-exec" {
-    command = <<EOF
-      az login --service-principal -u ${var.ARM_CLIENT_ID} -p ${var.ARM_CLIENT_SECRET} -t ${var.ARM_TENANT_ID}
-      az account show
-    EOF
-  }
-  provisioner "local-exec" {
-    command = <<EOF
-      az vm delete --name ${azurerm_windows_virtual_machine.temp_vm_for_st_join.name} --resource-group ${azurerm_resource_group.myrg_shd.name} --yes
-    EOF
-  }
-  provisioner "local-exec" {
-    command = <<EOF
-    az network nic delete --resource-group ${azurerm_resource_group.myrg_shd.name} --name ${azurerm_network_interface.temp_nic.name}
-    EOF
-  }
-  provisioner "local-exec" {
-    command = <<EOF
-    az disk delete --name osdisk --resource-group ${azurerm_resource_group.myrg_shd.name} --yes
-    EOF
-  }
-  depends_on  = [
-    null_resource.join_st_account
-  ]
-}
-
 # resource "null_resource" "install_az_cli" {
 #   provisioner "local-exec" {
 #     command = <<EOF
@@ -212,7 +230,7 @@ resource "azurerm_storage_account_network_rules" "stfw" {
   default_action     = var.public_access == false ? "Deny" : "Allow"
   bypass             = ["AzureServices"]
   depends_on = [
-    azurerm_private_endpoint.endpoint_st, null_resource.delete_vm
+    azurerm_private_endpoint.endpoint_st
   ]
 }
 
