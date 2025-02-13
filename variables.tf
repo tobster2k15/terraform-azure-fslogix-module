@@ -247,7 +247,7 @@ variable "download_path" {
     default     = "C:\\temp\\AzFilesHybrid.zip"
 }
 
-variable "destionation_path" {
+variable "destination_path" {
     type        = string
     description = "The path where your AzFilesHybrid.zip will be extracted on your local machine."
     default     = "C:\\temp"
