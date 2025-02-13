@@ -244,7 +244,7 @@ variable "securityPrincipalName" {
 variable "download_path" {
     type        = string
     description = "The local download path for AzFilesHybrid.zip your pc. Please make sure you'll give the download file a name and a proper extension."
-    default     = "C:\\temp\AzFilesHybrid.zip"
+    default     = "C:\\temp\\AzFilesHybrid.zip"
 }
 
 variable "destionation_path" {
