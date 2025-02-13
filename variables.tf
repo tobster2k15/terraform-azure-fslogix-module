@@ -91,6 +91,12 @@ variable "ARM_CLIENT_SECRET" {
   default     = null
 }
 
+variable "ARM_SUBSCRIPTION_ID" {
+  type        = string
+  description = "Subscription ID"
+  default     = null
+}
+
 variable "subnet_id" {
   type        = string
   description = "The ID of the subnet."
