@@ -97,37 +97,37 @@ variable "subnet_id" {
   default     = ""
 }
 
-variable "domain" {
-  type        = string
-  description = "Domain Suffix for ADDS. Example: contoso.com"
-  default     = ""
-}
+# variable "domain" {
+#   type        = string
+#   description = "Domain Suffix for ADDS. Example: contoso.com"
+#   default     = ""
+# }
 
-variable "domain_user" {
-  type        = string
-  description = "The identity that will join the VM to the domain. Please use the UPN Prefix."
-  default     = ""
-  sensitive   = true
-}
+# variable "domain_user" {
+#   type        = string
+#   description = "The identity that will join the VM to the domain. Please use the UPN Prefix."
+#   default     = ""
+#   sensitive   = true
+# }
 
-variable "domain_pass" {
-  type        = string
-  description = "Password for var.domain_user"
-  sensitive   = true
-  default     = ""
-}
+# variable "domain_pass" {
+#   type        = string
+#   description = "Password for var.domain_user"
+#   sensitive   = true
+#   default     = ""
+# }
 
-variable "local_admin" {
-  type        = string
-  description = "The local administrator username."
-  default     = ""
-}
-variable "local_pass" {
-  type        = string
-  description = "The local administrator password."
-  default     = ""
-  sensitive   = true
-}
+# variable "local_admin" {
+#   type        = string
+#   description = "The local administrator username."
+#   default     = ""
+# }
+# variable "local_pass" {
+#   type        = string
+#   description = "The local administrator password."
+#   default     = ""
+#   sensitive   = true
+# }
 
 variable "tags" {
   type        = map(any)
