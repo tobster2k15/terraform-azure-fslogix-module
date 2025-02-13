@@ -165,7 +165,7 @@ resource "null_resource" "domain_join_from_local_machine" {
     $StorageAccountName = "${azurerm_storage_account.storage.name}"
     $SamAccountName = "${azurerm_storage_account.storage.name}"
     $DomainAccountType = "ComputerAccount"
-    $OuDistinguishedName = "${var.avd_ou_path}"
+    $OuDistinguishedName = "${var.ou_path}"
     Join-AzStorageAccount `
         -ResourceGroupName $ResourceGroupName `
         -StorageAccountName $StorageAccountName `
