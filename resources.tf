@@ -175,7 +175,7 @@ resource "null_resource" "domain_join_from_local_machine" {
     EOF  
     interpreter = ["PowerShell", "-Command"]
   }
-  depends_on = [azurerm_storage_account.storage]
+  depends_on = [azurerm_storage_account.storage, azurerm_storage_share.FSShare, azurerm_private_endpoint.endpoint_st]
 }
 
 
@@ -230,7 +230,7 @@ resource "azurerm_storage_account_network_rules" "stfw" {
   default_action     = var.public_access == false ? "Deny" : "Allow"
   bypass             = ["AzureServices"]
   depends_on = [
-    azurerm_private_endpoint.endpoint_st
+    azurerm_private_endpoint.endpoint_st, null_resource.domain_join_from_local_machine
   ]
 }
 
