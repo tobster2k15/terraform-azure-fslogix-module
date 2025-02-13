@@ -240,3 +240,15 @@ variable "securityPrincipalName" {
     description = "The security principal name."
     default     = ""
 }
+
+variable "download_path" {
+    type        = string
+    description = "The local download path for AzFilesHybrid.zip your pc."
+    default     = "C:\\temp"
+}
+
+variable "destionation_path" {
+    type        = string
+    description = "The path where your AzFilesHybrid.zip will be extracted on your local machine."
+    default     = "C:\\temp"
+}
