@@ -1,10 +1,10 @@
 locals {
-  rg_name_shd        = "rg-${var.usecase}-shd-001"
-  st_name            = "st${var.usecase}vdi${var.environment}001"
-  st_share_name      = "share${var.usecase}fslogix01"
-  nic_name           = "nic-${var.usecase}-shd-001"
-  pep_name           = "pep-${var.usecase}-shd-${var.region}-001"
-  psc_name           = "psc-${var.usecase}-${var.environment}-${var.region}-001"
+  rg_name_shd   = "rg-${var.usecase}-shd-001"
+  st_name       = "st${var.usecase}vdi${var.environment}001"
+  st_share_name = "share${var.usecase}fslogix01"
+  nic_name      = "nic-${var.usecase}-shd-001"
+  pep_name      = "pep-${var.usecase}-shd-${var.region}-001"
+  psc_name      = "psc-${var.usecase}-${var.environment}-${var.region}-001"
 }
 
 #### Experimental ####

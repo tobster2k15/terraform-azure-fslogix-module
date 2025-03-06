@@ -184,9 +184,9 @@ variable "st_replication" {
 }
 
 variable "public_access" {
-    type        = bool
-    description = "Enable public access to the storage account."
-    default     = false
+  type        = bool
+  description = "Enable public access to the storage account."
+  default     = false
 }
 
 variable "vnet_id" {
@@ -215,46 +215,58 @@ variable "ou_path" {
 
 #### Experimental ####
 variable "dscAgentPackageLocation" {
-    type        = string
-    description = "The location of the DSC agent package."
-    default     = "./scripts/DSCStorageScripts.zip"
+  type        = string
+  description = "The location of the DSC agent package."
+  default     = "./scripts/DSCStorageScripts.zip"
 }
 
 variable "azure_cloud_name" {
-    type    = string
-    default = "AzurePublicCloud"
+  type    = string
+  default = "AzurePublicCloud"
 }
 variable "identityServiceProvider" {
-    type    = string
-    default = "ADDS"
+  type    = string
+  default = "ADDS"
 }
 
 variable "baseScriptUri" {
-    type        = string
-    description = "The base URI of the script."
-    default     = "./scripts/Configuration.ps1"
+  type        = string
+  description = "The base URI of the script."
+  default     = "./scripts/Configuration.ps1"
 }
 variable "file" {
-    type        = string
-    description = "The file to execute."
-    default     = "./scripts/Script-DomainJoinStorage.ps1"
+  type        = string
+  description = "The file to execute."
+  default     = "./scripts/Script-DomainJoinStorage.ps1"
 }
 # variable "scriptArguments" {}
 
 variable "securityPrincipalName" {
-    type        = string
-    description = "The security principal name."
-    default     = ""
+  type        = string
+  description = "The security principal name."
+  default     = ""
 }
 
 variable "download_path" {
-    type        = string
-    description = "The local download path for AzFilesHybrid.zip your pc. Please make sure you'll give the download file a name and a proper extension."
-    default     = "C:\\temp\\AzFilesHybrid.zip"
+  type        = string
+  description = "The local download path for AzFilesHybrid.zip your pc. Please make sure you'll give the download file a name and a proper extension."
+  default     = "C:\\temp\\AzFilesHybrid.zip"
 }
 
 variable "destination_path" {
-    type        = string
-    description = "The path where your AzFilesHybrid.zip will be extracted on your local machine."
-    default     = "C:\\temp"
+  type        = string
+  description = "The path where your AzFilesHybrid.zip will be extracted on your local machine."
+  default     = "C:\\temp"
+}
+
+variable "allowed_ips" {
+  type        = list(string)
+  description = "List of allowed public IPs for the storage account."
+  default     = [""]
+}
+
+variable "allowed_subnets" {
+  type        = list(string)
+  description = "List of allowed subnets for the storage account."
+  default     = [""]
 }

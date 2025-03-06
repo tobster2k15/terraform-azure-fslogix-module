@@ -111,7 +111,7 @@ resource "azurerm_resource_group" "myrg_shd" {
 #     azurerm_storage_share.FSShare
 #   ]
 # }
-    # -ExecutionPolicy Unrestricted -File /scripts/Configuration.ps1\" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose
+# -ExecutionPolicy Unrestricted -File /scripts/Configuration.ps1\" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose
 # "commandToExecute": 'powershell -ExecutionPolicy Unrestricted -File "$${path.module(scripts/Configuration.ps1)}" ${local.storage_to_domain_script_args} -AdminUserPassword ${var.domain_pass} -verbose'
 
 # resource "null_resource" "join_st_account" {
@@ -137,7 +137,7 @@ resource "azurerm_resource_group" "myrg_shd" {
 resource "null_resource" "domain_join_from_local_machine" {
 
   provisioner "local-exec" {
-    command = <<EOF
+    command     = <<EOF
     Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
     Invoke-WebRequest "https://github.com/Azure-Samples/azure-files-samples/releases/download/v0.3.2/AzFilesHybrid.zip" -OutFile "${var.download_path}"
     Expand-Archive -Path "${var.download_path}" -DestinationPath "${var.destination_path}"
@@ -153,7 +153,7 @@ resource "null_resource" "domain_join_from_local_machine" {
   }
 
   provisioner "local-exec" {
-    command = <<EOF
+    command     = <<EOF
     Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
     cd "${var.destination_path}"
     .\CopyToPSPath.ps1
@@ -226,9 +226,11 @@ resource "azurerm_private_endpoint" "endpoint_st" {
 
 # Deny Traffic from Public Networks with white list exceptions
 resource "azurerm_storage_account_network_rules" "stfw" {
-  storage_account_id = azurerm_storage_account.storage.id
-  default_action     = var.public_access == false ? "Deny" : "Allow"
-  bypass             = ["AzureServices"]
+  storage_account_id         = azurerm_storage_account.storage.id
+  default_action             = var.public_access == false ? "Deny" : "Allow"
+  ip_rules                   = var.allowed_ips
+  virtual_network_subnet_ids = var.allowed_subnets
+  bypass                     = ["AzureServices"]
   depends_on = [
     azurerm_private_endpoint.endpoint_st, null_resource.domain_join_from_local_machine
   ]
@@ -254,21 +256,21 @@ resource "azurerm_storage_account" "storage" {
   public_network_access_enabled    = var.public_access #Needs to be changed later on (portal), otherwise share can't be created
   allow_nested_items_to_be_public  = false
   cross_tenant_replication_enabled = false
-#   enable_https_traffic_only        = true
-  large_file_share_enabled         = true
-  tags                             = var.tags
+  #   enable_https_traffic_only        = true
+  large_file_share_enabled = true
+  tags                     = var.tags
   identity {
     type = "SystemAssigned"
   }
   ## lifecylce block needed for if your storage account already is domain joined ##
-#   lifecycle {
-#     ignore_changes = [azure_files_authentication]
-#   }
+  #   lifecycle {
+  #     ignore_changes = [azure_files_authentication]
+  #   }
 }
 
 resource "azurerm_storage_share" "FSShare" {
-  name             = "fslogix"
-  quota            = var.share_size
+  name  = "fslogix"
+  quota = var.share_size
   # enabled_protocol = var.share_protocol
   storage_account_id = azurerm_storage_account.storage.id
 }
@@ -283,7 +285,7 @@ resource "azurerm_storage_share" "additional_shares" {
 }
 
 resource "azurerm_role_assignment" "af_role_prd" {
- for_each            = toset(var.st_access)
+  for_each           = toset(var.st_access)
   scope              = azurerm_storage_account.storage.id
   role_definition_id = data.azurerm_role_definition.storage_role.id
   principal_id       = data.azuread_group.fslogix_group_prd[each.value].object_id
