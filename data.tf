@@ -34,3 +34,13 @@ data "azuread_group" "fslogix_group_prd" {
   display_name     = each.value
   security_enabled = true
 }
+
+data "azuread_group" "fslogix_group_adm" {
+  for_each         = toset(var.st_admins)
+  display_name     = each.value
+  security_enabled = true
+}
+
+data "azurerm_role_definition" "storage_role_adm" {
+  name = "Storage File Data SMB Share Elevated Contributor"
+}

@@ -150,7 +150,11 @@ variable "vnet_rg" {
 variable "st_name" {
   type        = string
   description = "Optional Name of Storage Account, if null a predefinied name will be generated."
-  default     = null
+  default = ""
+  validation {
+    condition = length(var.st_name)<= 19 || length(var.st_name) == 0
+    error_message = "Name too long, max 19 characters allowed."
+  }
 }
 
 variable "additional_shares" {
@@ -269,4 +273,10 @@ variable "allowed_subnets" {
   type        = list(string)
   description = "List of allowed subnets for the storage account."
   default     = [""]
+}
+
+variable "st_admins" {
+  type        = list(string)
+  description = "List for Admin Accounts with elevated rights on the Storage Account"
+  default = [""]
 }

@@ -138,9 +138,12 @@ resource "null_resource" "domain_join_from_local_machine" {
 
   provisioner "local-exec" {
     command     = <<EOF
-    Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
+    Set-ExecutionPolicy Unrestricted -Force
     Invoke-WebRequest "https://github.com/Azure-Samples/azure-files-samples/releases/download/v0.3.2/AzFilesHybrid.zip" -OutFile "${var.download_path}"
     Expand-Archive -Path "${var.download_path}" -DestinationPath "${var.destination_path}"
+    Unblock-File -Path "${var.destination_path}\AzFilesHybrid.psd1"
+    Unblock-File -Path "${var.destination_path}\AzFilesHybrid.psm1"
+    Unblock-File -Path "${var.destination_path}\CopyToPSPath.ps1"
     $SecurePassword = ConvertTo-SecureString -String '${var.ARM_CLIENT_SECRET}' -AsPlainText -Force
     $TenantId = '${var.ARM_TENANT_ID}'
     $ApplicationId = '${var.ARM_CLIENT_ID}'
@@ -154,8 +157,9 @@ resource "null_resource" "domain_join_from_local_machine" {
 
   provisioner "local-exec" {
     command     = <<EOF
-    Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
+    Set-ExecutionPolicy Unrestricted -Force
     cd "${var.destination_path}"
+    Unblock-File -Path "${var.destination_path}\CopyToPSPath.ps1"
     .\CopyToPSPath.ps1
     Import-Module -Name AzFilesHybrid -Force
     Import-Module -Name Az.Network -Force
@@ -179,6 +183,7 @@ resource "null_resource" "domain_join_from_local_machine" {
 }
 
 
+
 #### Delete Temp VM via Azure CLI ###
 # resource "null_resource" "install_az_cli" {
 #   provisioner "local-exec" {
@@ -190,25 +195,25 @@ resource "null_resource" "domain_join_from_local_machine" {
 #     azurerm_virtual_machine_extension.domain_join_st,
 #   ]
 # }
-resource "azurerm_private_dns_zone" "dnszone_st" {
-  name                = "privatelink.file.core.windows.net"
-  resource_group_name = var.vnet_rg == null ? azurerm_resource_group.myrg_shd.name : var.vnet_rg
-  tags                = var.tags
-}
+# resource "azurerm_private_dns_zone" "dnszone_st" {
+#   name                = "privatelink.file.core.windows.net"
+#   resource_group_name = var.vnet_rg == null ? azurerm_resource_group.myrg_shd.name : var.vnet_rg
+#   tags                = var.tags
+# }
 
-resource "azurerm_private_dns_a_record" "dnszone_st" {
-  name                = var.st_name == null ? "${local.st_name}" : "${var.st_name}"
-  zone_name           = azurerm_private_dns_zone.dnszone_st.name
-  resource_group_name = var.vnet_rg == null ? azurerm_resource_group.myrg_shd.name : var.vnet_rg
-  ttl                 = 300
-  records             = [azurerm_private_endpoint.endpoint_st.private_service_connection.0.private_ip_address]
-  tags                = var.tags
-}
+# resource "azurerm_private_dns_a_record" "dnszone_st" {
+#   name                = azurerm_storage_account.storage.name
+#   zone_name           = azurerm_private_dns_zone.dnszone_st.name
+#   resource_group_name = var.vnet_rg == null ? azurerm_resource_group.myrg_shd.name : var.vnet_rg
+#   ttl                 = 300
+#   records             = [azurerm_private_endpoint.endpoint_st.private_service_connection.0.private_ip_address]
+#   tags                = var.tags
+# }
 
 resource "azurerm_private_endpoint" "endpoint_st" {
   name                = "${local.pep_name}-st"
   location            = azurerm_resource_group.myrg_shd.location
-  resource_group_name = var.vnet_rg == null ? azurerm_resource_group.myrg_shd.name : var.vnet_rg
+  resource_group_name = azurerm_resource_group.myrg_shd.name
   subnet_id           = var.subnet_id
   tags                = var.tags
 
@@ -218,35 +223,40 @@ resource "azurerm_private_endpoint" "endpoint_st" {
     is_manual_connection           = false
     subresource_names              = ["file"]
   }
-  private_dns_zone_group {
-    name                 = "dns-file-${var.business_unit}"
-    private_dns_zone_ids = azurerm_private_dns_zone.dnszone_st[*].id
-  }
+  # private_dns_zone_group {
+  #   name                 = "dns-file-${var.business_unit}"
+  #   private_dns_zone_ids = azurerm_private_dns_zone.dnszone_st[*].id
+  # }
 }
 
 # Deny Traffic from Public Networks with white list exceptions
 resource "azurerm_storage_account_network_rules" "stfw" {
   storage_account_id         = azurerm_storage_account.storage.id
-  default_action             = var.public_access == false ? "Deny" : "Allow"
-  ip_rules                   = var.allowed_ips
-  virtual_network_subnet_ids = var.allowed_subnets
+  default_action             = "Deny"
   bypass                     = ["AzureServices"]
   depends_on = [
     azurerm_private_endpoint.endpoint_st, null_resource.domain_join_from_local_machine
   ]
 }
 
-resource "azurerm_private_dns_zone_virtual_network_link" "filelink" {
-  name                  = "azfilelink-${var.business_unit}"
-  resource_group_name   = var.vnet_rg == null ? azurerm_resource_group.myrg_shd.name : var.vnet_rg
-  private_dns_zone_name = azurerm_private_dns_zone.dnszone_st.name
-  virtual_network_id    = var.vnet_id
+# resource "azurerm_private_dns_zone_virtual_network_link" "filelink" {
+#   name                  = "vnl-${data.azurerm_subscription.current.subscription_name}-prd-001"
+#   resource_group_name   = var.vnet_rg == null ? azurerm_resource_group.myrg_shd.name : var.vnet_rg
+#   private_dns_zone_name = azurerm_private_dns_zone.dnszone_st.name
+#   virtual_network_id    = var.vnet_id
 
-  lifecycle { ignore_changes = [tags] }
+#   lifecycle { ignore_changes = [tags] }
+# }
+resource "random_string" "random_stname" {
+  length           = 16
+  numeric          = true
+  special          = false
+  lower            = true
+  upper            = false
 }
 
 resource "azurerm_storage_account" "storage" {
-  name                             = var.st_name == null ? local.st_name : var.st_name #"${lower(random_string.random.result)}-st"
+  name                             = length(var.st_name) == 0 ? "st${random_string.random_stname.result}" : var.st_name #"${lower(random_string.random.result)}-st"
   resource_group_name              = azurerm_resource_group.myrg_shd.name
   location                         = azurerm_resource_group.myrg_shd.location
   min_tls_version                  = "TLS1_2"
@@ -256,16 +266,15 @@ resource "azurerm_storage_account" "storage" {
   public_network_access_enabled    = var.public_access #Needs to be changed later on (portal), otherwise share can't be created
   allow_nested_items_to_be_public  = false
   cross_tenant_replication_enabled = false
-  #   enable_https_traffic_only        = true
   large_file_share_enabled = true
   tags                     = var.tags
   identity {
     type = "SystemAssigned"
   }
   ## lifecylce block needed for if your storage account already is domain joined ##
-  #   lifecycle {
-  #     ignore_changes = [azure_files_authentication]
-  #   }
+    lifecycle {
+      ignore_changes = [azure_files_authentication]
+    }
 }
 
 resource "azurerm_storage_share" "FSShare" {
@@ -289,4 +298,11 @@ resource "azurerm_role_assignment" "af_role_prd" {
   scope              = azurerm_storage_account.storage.id
   role_definition_id = data.azurerm_role_definition.storage_role.id
   principal_id       = data.azuread_group.fslogix_group_prd[each.value].object_id
+}
+
+resource "azurerm_role_assignment" "af_role_adm" {
+  for_each           = toset(var.st_admins)
+  scope              = azurerm_storage_account.storage.id
+  role_definition_id = data.azurerm_role_definition.storage_role_adm.id
+  principal_id       = data.azuread_group.fslogix_group_adm[each.value].object_id
 }
